@@ -1,0 +1,197 @@
+/* Resume stylesheet — HTML -> PDF via WeasyPrint.
+ *
+ * Content lives in src/master.md + src/variants/<slug>.md. Edit layout here only.
+ *
+ * ATS rules are load-bearing — do not break them:
+ *   - single column, no CSS columns
+ *   - no tables, no background images, no icon fonts
+ *   - all text is real text (never rasterised)
+ *   - bullets use U+2022, which every parser understands
+ *   - section order and headings come from the markdown, not from CSS
+ */
+
+/* ---------- bundled font (Inter, OFL — see fonts/LICENSE-Inter.txt) --------
+ * Must be .ttf/.otf: WeasyPrint renders through fontconfig, which does not
+ * load .woff2 and would fall back silently. */
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  src: url("fonts/Inter-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: italic;
+  font-weight: 400;
+  src: url("fonts/Inter-Italic.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 600;
+  src: url("fonts/Inter-SemiBold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  src: url("fonts/Inter-Bold.ttf") format("truetype");
+}
+
+:root {
+  --accent: #0b4f6c;
+  --ink: #1b1f23;
+  --muted: #5b6570;
+  --rule: #d7dde3;
+}
+
+@page {
+  size: A4;
+  margin: 13mm 15mm 14mm 15mm;
+
+  /* WeasyPrint-only running footer. Variants set `footer: false` to drop it
+     (the text lands mid-stream in extracted text on multi-page resumes). */
+  @bottom-center {
+    content: "Page " counter(page) " of " counter(pages);
+    font-size: 7pt;
+    color: #9aa0a6;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html {
+  font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  font-size: 9.5pt;
+  line-height: 1.38;
+}
+
+/* ---------- header ---------- */
+
+.resume-header {
+  border-bottom: 2pt solid var(--accent);
+  padding-bottom: 6pt;
+  margin-bottom: 10pt;
+}
+
+.name {
+  margin: 0 0 3pt;
+  font-size: 21pt;
+  font-weight: 700;
+  letter-spacing: 0.4pt;
+}
+
+.contact,
+.links {
+  margin: 0;
+  font-size: 8.5pt;
+  color: var(--muted);
+}
+
+.links { margin-top: 2pt; }
+.contact a { color: var(--muted); text-decoration: none; }
+.links a { color: var(--accent); text-decoration: none; }
+
+/* ---------- tagline + summary ---------- */
+
+.tagline {
+  margin: 0 0 4pt;
+  font-size: 11pt;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.3pt;
+}
+
+.summary {
+  margin: 0 0 10pt;
+  text-align: justify;
+}
+
+/* ---------- sections ---------- */
+
+h2 {
+  margin: 11pt 0 6pt;
+  padding-bottom: 2pt;
+  font-size: 10pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8pt;
+  color: var(--accent);
+  border-bottom: 0.6pt solid var(--rule);
+  break-after: avoid;
+}
+
+.summary + h2 { margin-top: 2pt; }
+
+/* ---------- entries ---------- */
+
+.entry {
+  margin: 0 0 7pt;
+}
+
+/* No floats: floated boxes are painted before in-flow content in the PDF text
+   stream, which reorders what an ATS extracts. `display: table` keeps the
+   title/date on one line while preserving title-then-date reading order. */
+.entry-head {
+  display: table;
+  width: 100%;
+  break-after: avoid;
+}
+
+.entry-title {
+  display: table-cell;
+  margin: 0;
+  font-size: 10pt;
+  font-weight: 700;
+}
+
+.entry-meta {
+  display: table-cell;
+  margin: 0;
+  padding-left: 8pt;
+  text-align: right;
+  font-size: 8.5pt;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ---------- bullets ---------- */
+
+ul {
+  margin: 5pt 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+h2 + ul { margin-top: 3pt; }
+
+li {
+  padding-left: 11pt;
+  text-indent: -11pt;
+  margin: 0 0 2pt;
+  orphans: 2;
+  widows: 2;
+}
+
+li::before {
+  content: "\2022"; /* U+2022 BULLET — ATS-safe */
+  margin-right: 4pt;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ---------- skill lines ---------- */
+
+.skill {
+  margin: 0 0 2pt;
+  padding-left: 11pt;
+  text-indent: -11pt;
+}
+
+.skill strong { font-weight: 700; }
