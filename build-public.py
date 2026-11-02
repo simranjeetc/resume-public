@@ -2,7 +2,7 @@
 """Build the public, PII-free resume site from the private resume repo.
 
 Source of truth is the private repo's generated HTML:
-    ../resume/out/platform-engineer/platform-architect.html
+    ../resume/resumes/platform-architect/platform-architect.html
 
 This script NEVER authors content. It only:
   1. strips phone + email from the contact line (keeps "Bangalore, India"),
@@ -24,7 +24,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 PRIVATE = HERE.parent / "resume"
-SRC_HTML = PRIVATE / "out" / "platform-engineer" / "platform-architect.html"
+SRC_HTML = PRIVATE / "resumes" / "platform-architect" / "platform-architect.html"
 SRC_MASTER = PRIVATE / "src" / "master.md"
 PDF = HERE / "resume.pdf"
 
