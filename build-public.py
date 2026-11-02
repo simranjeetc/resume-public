@@ -43,6 +43,20 @@ PUBLIC_CONTACT = "Bangalore, India"
 CSS_LINK_OLD = '<link rel="stylesheet" href="../../styles/resume.css">'
 CSS_LINK_NEW = '<link rel="stylesheet" href="styles/resume.css">'
 
+# Breathing room around the resume: wider PDF margins, and a gutter on the web
+# page, which otherwise runs to the browser edge. Print-only and screen-only, so
+# neither changes the extracted text.
+PUBLIC_CSS = """<style>
+  @page { margin: 20mm 22mm 18mm 22mm; }
+  body { font-size: 9.25pt; line-height: 1.36; }
+  @media screen {
+    :root { --gutter: max(24px, calc((100vw - 210mm) / 2)); }
+    body { padding: 32px var(--gutter) 48px; overflow-x: clip; }
+    .site-bar { margin: -32px calc(-1 * var(--gutter)) 28px; }
+  }
+</style>
+"""
+
 BAR = """<div class="site-bar">
   <span>Simranjeet Singh &mdash; Resume</span>
   <a class="dl" href="resume.pdf" download>Download PDF</a>
@@ -77,7 +91,8 @@ def scrub(html: str) -> str:
     )
     if CSS_LINK_OLD not in html:
         sys.exit(f"stylesheet link not found in {SRC_HTML} — template changed?")
-    return html.replace(CSS_LINK_OLD, CSS_LINK_NEW)
+    html = html.replace(CSS_LINK_OLD, CSS_LINK_NEW)
+    return html.replace("</head>", PUBLIC_CSS + "</head>", 1)
 
 
 def private_pii() -> list[str]:
